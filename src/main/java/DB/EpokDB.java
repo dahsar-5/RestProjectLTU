@@ -37,16 +37,17 @@ public class EpokDB {
     }
 
     // Gets all active modules for a specific course
+
     public static List<String> getModules(String courseCode) {
 
         List<String> modules = new ArrayList<>();
 
         String sql = """
-                SELECT ModuleCode
-                FROM modul
-                WHERE CourseCode = ?
-                AND Status = 'Active'
-                """;
+            SELECT m.ModuleCode
+            FROM course c
+            JOIN modul m ON c.ModulID = m.ModulID
+            WHERE c.CourseCode = ?
+            """;
 
         try (
                 Connection conn = EpokConnection.getConnection();
@@ -56,7 +57,6 @@ public class EpokDB {
             stmt.setString(1, courseCode);
 
             try (ResultSet rs = stmt.executeQuery()) {
-
                 while (rs.next()) {
                     modules.add(rs.getString("ModuleCode"));
                 }
@@ -68,4 +68,5 @@ public class EpokDB {
 
         return modules;
     }
+
 }
