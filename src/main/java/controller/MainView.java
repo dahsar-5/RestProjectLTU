@@ -14,7 +14,7 @@ public class MainView extends Application {
     public void start(Stage stage) throws IOException {
 
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/SOA_A3_GUI.fxml")
+                getClass().getResource("/SOA A3 GUI uppdated.fxml")
         );
 
         Scene scene = new Scene(loader.load());

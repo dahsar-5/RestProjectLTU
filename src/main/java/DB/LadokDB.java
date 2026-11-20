@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.ArrayList;
 
 public class LadokDB {
     public static boolean studentExists(String personnummer) throws SQLException {
@@ -77,5 +79,41 @@ public class LadokDB {
 
             stmt.executeUpdate();
         }
+
     }
+
+    public static List<String> getResultsByModule(int moduleCode)
+            throws SQLException {
+
+        List<String> results = new ArrayList<>();
+
+        String sql = """
+            SELECT r.Personnr, r.FinalGrade, r.ExamDate
+            FROM Result r
+            JOIN Modul m ON r.ModulID = m.ModulID
+            WHERE m.ModuleCode = ?
+            """;
+
+        try (
+                Connection conn = LadokConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+            stmt.setInt(1, moduleCode);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+
+                    String result =
+                            rs.getString("Personnr") + " | " +
+                                    rs.getString("FinalGrade") + " | " +
+                                    rs.getString("ExamDate");
+
+                    results.add(result);
+                }
+            }
+        }
+
+        return results;
+    }
+
 }

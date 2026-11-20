@@ -6,6 +6,5 @@ import javafx.scene.control.ComboBox;
 //Get courses from canvas based on UI input
 public class CourseController {
 
-    @FXML
-    private ComboBox<String> CourceCode;
+
 }
