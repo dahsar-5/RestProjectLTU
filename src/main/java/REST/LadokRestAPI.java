@@ -21,7 +21,39 @@ public class LadokRestAPI {
             String examDate = ctx.formParam("examDate");
             String grade = ctx.formParam("grade");
 
+            // Check if the student exists in Ladok
+            if (!LadokDB.studentExists(personnummer)) {
+                ctx.status(404);
+                ctx.result("Student not found in Ladok");
+                return;
+            }
+
+            // Find Ladok module ID using the moduleCode
+            int code = Integer.parseInt(moduleCode);
+            int modulID = LadokDB.findModulID(code);
+
+            // Check if module was found
+            if (modulID == 0) {
+                ctx.status(404);
+                ctx.result("Module not found in Ladok");
+                return;
+            }
+
+            // Check if result already exist
+            if (LadokDB.resultExists(personnummer, modulID)) {
+                ctx.status(409);
+                ctx.result("Result already exists in Ladok");
+                return;
+            }
+
+            // Register the result in Ladok
+            LadokDB.insertResult(personnummer, modulID, examDate, grade);
+
+            ctx.status(201);
+            ctx.result("Result registered successfully in Ladok");
         });
+
+
 
            // Find Ladok's internal module ID based on a module code
         app.get("/ladok/modules/:moduleCode", ctx -> {
@@ -36,6 +68,7 @@ public class LadokRestAPI {
                 ctx.status(404);
                 ctx.result("Module not found in Ladok");
             }
+
         });
 
 
