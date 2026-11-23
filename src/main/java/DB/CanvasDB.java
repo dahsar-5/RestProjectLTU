@@ -11,7 +11,7 @@ import java.util.List;
 
 public class CanvasDB {
 
-    // Returns all available course codes
+    // Get all course codes
     public static List<String> getCourses() {
 
         List<String> courses = new ArrayList<>();
@@ -35,7 +35,7 @@ public class CanvasDB {
         return courses;
     }
 
-    // Returns assignments for selected course
+    // Get assignments for a course
     public static List<String> getAssignments(String courseCode) {
 
         List<String> assignments = new ArrayList<>();
@@ -43,7 +43,8 @@ public class CanvasDB {
         String sql = """
                 SELECT a.ExamType
                 FROM Assignment a
-                JOIN Course c ON a.CourseID = c.CourseID
+                JOIN Course c
+                    ON a.CourseID = c.CourseID
                 WHERE c.CourseCode = ?
                 """;
 
@@ -57,7 +58,9 @@ public class CanvasDB {
             try (ResultSet rs = stmt.executeQuery()) {
 
                 while (rs.next()) {
-                    assignments.add(rs.getString("ExamType"));
+                    assignments.add(
+                            rs.getString("ExamType")
+                    );
                 }
             }
 
@@ -68,7 +71,7 @@ public class CanvasDB {
         return assignments;
     }
 
-    // Returns grades for selected assignment
+    // Get grades for assignment
     public static List<String> getGrades(String examType) {
 
         List<String> grades = new ArrayList<>();
@@ -76,43 +79,6 @@ public class CanvasDB {
         String sql = """
                 SELECT g.Grade
                 FROM Grade g
-                JOIN Assignment a ON g.ExamID = a.ExamID
-                WHERE a.ExamType = ?
-                """;
-
-        try (
-                Connection conn = CanvasConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)
-        ) {
-
-            stmt.setString(1, examType);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-
-                while (rs.next()) {
-                    grades.add(rs.getString("Grade"));
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return grades;
-    }
-
-    // Returns students for selected assignment
-    public static List<String> getStudents(String examType) {
-
-        List<String> students = new ArrayList<>();
-
-        String sql = """
-                SELECT s.StudentID
-                FROM Student s
-                JOIN Course_Student cs
-                    ON s.StudentID = cs.StudentID
-                JOIN Grade g
-                    ON cs.course_student_id = g.course_student_id
                 JOIN Assignment a
                     ON g.ExamID = a.ExamID
                 WHERE a.ExamType = ?
@@ -128,7 +94,49 @@ public class CanvasDB {
             try (ResultSet rs = stmt.executeQuery()) {
 
                 while (rs.next()) {
-                    students.add(rs.getString("StudentID"));
+                    grades.add(
+                            rs.getString("Grade")
+                    );
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return grades;
+    }
+
+    // Get students for assignment
+    public static List<String> getStudents(String examType) {
+
+        List<String> students = new ArrayList<>();
+
+        String sql = """
+                SELECT s.StudentID
+                FROM Student s
+                JOIN Course_Student cs
+                    ON s.StudentID = cs.StudentID
+                JOIN Grade g
+                    ON cs.Course_Student_ID = g.Course_Student_ID
+                JOIN Assignment a
+                    ON g.ExamID = a.ExamID
+                WHERE a.ExamType = ?
+                """;
+
+        try (
+                Connection conn = CanvasConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+
+            stmt.setString(1, examType);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+
+                while (rs.next()) {
+                    students.add(
+                            rs.getString("StudentID")
+                    );
                 }
             }
 
