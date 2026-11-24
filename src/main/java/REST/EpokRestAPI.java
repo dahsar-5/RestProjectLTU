@@ -9,7 +9,7 @@ public class EpokRestAPI {
     public static void main(String[] args) {
 
         Javalin app = Javalin.create()
-                .port(7000)
+                .port(7002)
                 .start();
 
         // Returns all courses from E-pok

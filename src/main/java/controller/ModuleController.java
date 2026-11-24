@@ -22,7 +22,7 @@ import java.util.List;
         ObjectMapper mapper = new ObjectMapper();
 
         // 1. Get modules for the selected course from E-pok
-        String epokUrl = "http://localhost:7000/epok/modules/" + courseCode;
+        String epokUrl = "http://localhost:7002/epok/modules/" + courseCode;
 
         HttpRequest epokRequest = HttpRequest.newBuilder()
                 .uri(URI.create(epokUrl))

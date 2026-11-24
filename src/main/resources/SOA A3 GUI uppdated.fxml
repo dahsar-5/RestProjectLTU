@@ -26,7 +26,9 @@
             <VBox prefHeight="200.0" prefWidth="300.0">
                <children>
                   <Label text="Course Code" />
-                  <ComboBox prefWidth="300.0" promptText="Select course" />
+                  <ComboBox fx:id="CourceCode"
+                            prefWidth="300.0"
+                            promptText="Select course" />
                   <VBox prefHeight="200.0" prefWidth="100.0" />
                </children>
             </VBox>
@@ -34,7 +36,9 @@
             <VBox prefHeight="200.0" prefWidth="300.0">
                <children>
                   <Label text="Canvas Assignment" />
-                  <ComboBox prefWidth="300.0" promptText="Select assignment" />
+                  <ComboBox fx:id="canvasAssignment"
+                            prefWidth="300.0"
+                            promptText="Select assignment" />
                </children>
             </VBox>
 

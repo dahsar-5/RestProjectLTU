@@ -33,18 +33,35 @@ public class Controller {
             e.printStackTrace();
         }
 
+
         CourceCode.setOnAction(event -> {
 
             String courseCode = CourceCode.getValue();
 
             if (courseCode != null) {
+
+                // Load assignments from Canvas
                 try {
                     loadAssignments(courseCode);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                // Load verified modules from E-pok and Ladok
+                try {
+                    ladokModule.getItems().clear();
+
+                    List<String> modules =
+                            ModuleController.getModules(courseCode);
+
+                    ladokModule.getItems().addAll(modules);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
+
     }
 
     private void loadCourses() throws Exception {
