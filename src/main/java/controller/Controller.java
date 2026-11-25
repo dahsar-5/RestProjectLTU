@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
+import model.ModuleController;
 
 import java.net.URI;
 import java.net.http.HttpClient;
