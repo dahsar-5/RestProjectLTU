@@ -7,8 +7,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.ComboBoxTableCell;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import model.ModuleController;
 import model.StudentTeacher;
+
+import java.time.LocalDate;
+import javafx.scene.control.DatePicker;
+import javafx.beans.property.SimpleObjectProperty;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -23,6 +29,18 @@ public class Controller {
 
     @FXML
     private TableColumn<StudentTeacher, String> nameCol;
+
+    @FXML
+    private TableColumn<StudentTeacher, String> ladokGradeCol;
+
+    @FXML
+    private TableColumn<StudentTeacher, Boolean> selectCol;
+
+    @FXML
+    private TableColumn<StudentTeacher, LocalDate> examinationDateCol;
+
+    @FXML
+    private DatePicker examDatePicker;
 
     @FXML
     private ComboBox<String> CourceCode;
@@ -44,6 +62,40 @@ public class Controller {
             String last = u.getlName() != null ? u.getlName() : "";
             return new SimpleStringProperty((first + " " + last).trim());
         });
+
+        // Configure Ladok grade column
+        dispalyTable.setEditable(true);
+        ladokGradeCol.setEditable(true);
+
+        ladokGradeCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(
+                        cellData.getValue().getLadokGrade()
+                )
+        );
+        ladokGradeCol.setCellFactory(
+                ComboBoxTableCell.forTableColumn("U", "G", "VG")
+        );
+        ladokGradeCol.setOnEditCommit(event ->
+                event.getRowValue().setLadokGrade(event.getNewValue())
+        );
+
+        // Configure student selection
+        selectCol.setEditable(true);
+
+        selectCol.setCellValueFactory(cellData ->
+                cellData.getValue().selectedProperty()
+        );
+
+        selectCol.setCellFactory(
+                CheckBoxTableCell.forTableColumn(selectCol)
+        );
+
+        // Configure examination date column
+        examinationDateCol.setCellValueFactory(cellData ->
+                new SimpleObjectProperty<>(
+                        cellData.getValue().getExaminationDate()
+                )
+        );
 
         try {
             loadCourses();
@@ -203,5 +255,39 @@ public class Controller {
                 .toList();
 
         dispalyTable.getItems().setAll(students);
+    }
+
+    // Set examination date for selected students
+    @FXML
+    private void setExamDate() {
+        System.out.println("Set date clicked");
+
+        LocalDate date = examDatePicker.getValue();
+            if (date == null) {
+            return;
+        }
+
+        for (StudentTeacher student : dispalyTable.getItems()) {
+            if (student.isSelected()) {
+                student.setExaminationDate(date);
+            }
+        }
+
+        dispalyTable.refresh();
+    }
+    // Select all students
+    @FXML
+    private void selectAll() {
+        for (StudentTeacher student : dispalyTable.getItems()) {
+            student.setSelected(true);
+        }
+    }
+
+    // Unselect all students
+    @FXML
+    private void selectNone() {
+        for (StudentTeacher student : dispalyTable.getItems()) {
+            student.setSelected(false);
+        }
     }
 }

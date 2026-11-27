@@ -49,9 +49,9 @@
                         <Label text="Select" />
                         <HBox prefHeight="83.0" prefWidth="280.0" spacing="10.0">
                             <children>
-                                <Button mnemonicParsing="false" prefWidth="75.0" text="All" />
+                                <Button mnemonicParsing="false" prefWidth="75.0" text="All" onAction="#selectAll" />
                                 <Button mnemonicParsing="false" prefWidth="75.0" text="Graded" />
-                                <Button mnemonicParsing="false" prefWidth="75.0" text="None" />
+                                <Button mnemonicParsing="false" prefWidth="75.0" text="None" onAction="#selectNone" />
                             </children>
                         </HBox>
                     </children>
@@ -62,8 +62,8 @@
                         <Label text="Date for selected" />
                         <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                             <children>
-                                <DatePicker />
-                                <Button mnemonicParsing="false" text="Set date" />
+                                <DatePicker fx:id="examDatePicker" />
+                                <Button mnemonicParsing="false" text="Set date" onAction="#setExamDate" />
                             </children>
                         </HBox>
                     </children>
@@ -91,12 +91,12 @@
         </HBox>
 
         <TableView fx:id="dispalyTable" prefHeight="350.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-            <columns>
-                <TableColumn maxWidth="45.0" minWidth="45.0" prefWidth="45.0" text="Select" />
+             <columns>
+                <TableColumn fx:id="selectCol" maxWidth="45.0" minWidth="45.0" prefWidth="45.0" text="Select" />
                 <TableColumn fx:id="nameCol" prefWidth="140.0" text="Name" />
                 <TableColumn prefWidth="140.0" text="Canvas Grades" />
-                <TableColumn prefWidth="140.0" text="Ladok Grade" />
-                <TableColumn prefWidth="140.0" text="Examination Date" />
+                <TableColumn fx:id="ladokGradeCol" prefWidth="140.0" text="Ladok Grade" />
+                <TableColumn fx:id="examinationDateCol" prefWidth="140.0" text="Examination Date" />
                 <TableColumn prefWidth="140.0" text="Status" />
             </columns>
             <columnResizePolicy>
