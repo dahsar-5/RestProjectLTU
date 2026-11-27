@@ -38,6 +38,9 @@ public class CanvasDB {
     // Get assignments for a course
     public static List<String> getAssignments(String courseCode) {
 
+
+        System.out.print(courseCode);
+        System.out.println("getassTest");
         List<String> assignments = new ArrayList<>();
 
         String sql = """

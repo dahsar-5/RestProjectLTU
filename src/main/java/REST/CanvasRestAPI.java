@@ -19,7 +19,7 @@ public class CanvasRestAPI {
         app.get("/canvas/assignments/:courseCode", ctx -> {
 
             String courseCode =
-                    ctx.formParam("courseCode");
+                    ctx.param("courseCode");
 
             ctx.json(
                     CanvasDB.getAssignments(courseCode)
@@ -30,7 +30,7 @@ public class CanvasRestAPI {
         app.get("/canvas/students/:examType", ctx -> {
 
             String examType =
-                    ctx.formParam("examType");
+                    ctx.param("examType");
 
             ctx.json(
                     CanvasDB.getStudents(examType)
@@ -41,7 +41,7 @@ public class CanvasRestAPI {
         app.get("/canvas/grades/:examType", ctx -> {
 
             String examType =
-                    ctx.formParam("examType");
+                    ctx.param("examType");
 
             ctx.json(
                     CanvasDB.getGrades(examType)
