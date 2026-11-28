@@ -11,6 +11,8 @@ import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import model.ModuleController;
 import model.StudentTeacher;
+import model.ResultController;
+import javafx.scene.control.Button;
 
 import java.time.LocalDate;
 import javafx.scene.control.DatePicker;
@@ -21,6 +23,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
+
 
 public class Controller {
 
@@ -50,6 +53,14 @@ public class Controller {
 
     @FXML
     private ComboBox<String> ladokModule;
+
+
+    //Status field in table
+    @FXML
+    private TableColumn<StudentTeacher, String> statusCol;
+
+    @FXML
+    private Button transferButton;
 
     @FXML
     public void initialize() {
@@ -97,6 +108,15 @@ public class Controller {
                 )
         );
 
+        // Configure Ladok registration status column
+        statusCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(
+                        cellData.getValue().isRegistered()
+                                ? "Registered"
+                                : "Not graded"
+                )
+        );
+
         try {
             loadCourses();
         } catch (Exception e) {
@@ -141,6 +161,26 @@ public class Controller {
                 // Load students into dispalyTable
                 try {
                     loadStudentsForCourse(courseCode);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        // Load Ladok results when a module is selected
+        ladokModule.setOnAction(event -> {
+
+            String moduleCode = ladokModule.getValue();
+
+            if (moduleCode != null) {
+                try {
+                    ResultController.loadLadokResults(
+                            moduleCode,
+                            dispalyTable.getItems()
+                    );
+
+                    dispalyTable.refresh();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -289,5 +329,52 @@ public class Controller {
         for (StudentTeacher student : dispalyTable.getItems()) {
             student.setSelected(false);
         }
+    }
+    // Transfer selected student results to Ladok
+    @FXML
+    private void transferResults() {
+
+        String courseCode = CourceCode.getValue();
+        String moduleCode = ladokModule.getValue();
+
+        // Check that course and module are selected
+        if (courseCode == null || moduleCode == null) {
+            return;
+        }
+
+        for (StudentTeacher student : dispalyTable.getItems()) {
+
+            // Skip students who are not selected or already registered
+            if (!student.isSelected() || student.isRegistered()) {
+                continue;
+            }
+
+            // Check required information
+            if (student.getPersonnr() == null
+                    || student.getLadokGrade() == null
+                    || student.getLadokGrade().isBlank()
+                    || student.getExaminationDate() == null) {
+
+                System.out.println("Missing required information");
+                continue;
+            }
+
+            try {
+                boolean success = ResultController.transferResult(
+                        student,
+                        courseCode,
+                        moduleCode
+                );
+
+                if (success) {
+                    student.setRegistered(true);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        dispalyTable.refresh();
     }
 }

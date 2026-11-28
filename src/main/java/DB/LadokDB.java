@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
+import model.Result;
 
 public class LadokDB {
     public static boolean studentExists(String personnummer) throws SQLException {
@@ -81,18 +82,18 @@ public class LadokDB {
         }
 
     }
-
-    public static List<String> getResultsByModule(int moduleCode)
+    public static List<Result> getResultsByModule(int moduleCode)
             throws SQLException {
 
-        List<String> results = new ArrayList<>();
+        List<Result> results = new ArrayList<>();
 
         String sql = """
-            SELECT r.Personnr, r.FinalGrade, r.ExamDate
-            FROM Result r
-            JOIN Modul m ON r.ModulID = m.ModulID
-            WHERE m.ModuleCode = ?
-            """;
+        SELECT r.Personnr, r.FinalGrade,
+               r.ExamDate, r.Registered
+        FROM Result r
+        JOIN Modul m ON r.ModulID = m.ModulID
+        WHERE m.ModuleCode = ?
+        """;
 
         try (
                 Connection conn = LadokConnection.getConnection();
@@ -103,10 +104,12 @@ public class LadokDB {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
 
-                    String result =
-                            rs.getString("Personnr") + " | " +
-                                    rs.getString("FinalGrade") + " | " +
-                                    rs.getString("ExamDate");
+                    Result result = new Result(
+                            rs.getString("Personnr"),
+                            rs.getString("FinalGrade"),
+                            rs.getString("ExamDate"),
+                            rs.getBoolean("Registered")
+                    );
 
                     results.add(result);
                 }
@@ -115,5 +118,40 @@ public class LadokDB {
 
         return results;
     }
+
+    // I'm updating this method to make it more fitting for the result table, getting resultobjects, adding status as a field
+//    public static List<String> getResultsByModule(int moduleCode)
+//            throws SQLException {
+//
+//        List<String> results = new ArrayList<>();
+//
+//        String sql = """
+//            SELECT r.Personnr, r.FinalGrade, r.ExamDate
+//            FROM Result r
+//            JOIN Modul m ON r.ModulID = m.ModulID
+//            WHERE m.ModuleCode = ?
+//            """;
+//
+//        try (
+//                Connection conn = LadokConnection.getConnection();
+//                PreparedStatement stmt = conn.prepareStatement(sql)
+//        ) {
+//            stmt.setInt(1, moduleCode);
+//
+//            try (ResultSet rs = stmt.executeQuery()) {
+//                while (rs.next()) {
+//
+//                    String result =
+//                            rs.getString("Personnr") + " | " +
+//                                    rs.getString("FinalGrade") + " | " +
+//                                    rs.getString("ExamDate");
+//
+//                    results.add(result);
+//                }
+//            }
+//        }
+//
+//        return results;
+//    }
 
 }

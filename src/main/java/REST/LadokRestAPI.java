@@ -3,6 +3,8 @@ package REST;
 
 import DB.LadokDB;
 import io.javalin.Javalin;
+import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Map;
 
 public class LadokRestAPI {
 
@@ -15,16 +17,19 @@ public class LadokRestAPI {
         //POST endpoint
         app.post("/ladok/result", ctx -> {
 
-            String personnummer = ctx.formParam("personnummer");
-            String courseCode = ctx.formParam("courseCode");
-            String moduleCode = ctx.formParam("moduleCode");
-            String examDate = ctx.formParam("examDate");
-            String grade = ctx.formParam("grade");
+            // Read JSON request body
+            JsonNode body = ctx.bodyAsClass(JsonNode.class);
+
+            String personnummer = body.get("personnummer").asText();
+            String courseCode = body.get("courseCode").asText();
+            String moduleCode = body.get("moduleCode").asText();
+            String examDate = body.get("examDate").asText();
+            String grade = body.get("grade").asText();
 
             // Check if the student exists in Ladok
             if (!LadokDB.studentExists(personnummer)) {
                 ctx.status(404);
-                ctx.result("Student not found in Ladok");
+                ctx.json(Map.of("message", "Student not found in Ladok"));
                 return;
             }
 
@@ -35,14 +40,14 @@ public class LadokRestAPI {
             // Check if module was found
             if (modulID == 0) {
                 ctx.status(404);
-                ctx.result("Module not found in Ladok");
+                ctx.json(Map.of("message", "Module not found in Ladok"));
                 return;
             }
 
             // Check if result already exist
             if (LadokDB.resultExists(personnummer, modulID)) {
                 ctx.status(409);
-                ctx.result("Result already exists in Ladok");
+                ctx.json(Map.of("message", "Result already exists in Ladok"));
                 return;
             }
 
@@ -50,9 +55,8 @@ public class LadokRestAPI {
             LadokDB.insertResult(personnummer, modulID, examDate, grade);
 
             ctx.status(201);
-            ctx.result("Result registered successfully in Ladok");
+            ctx.json(Map.of("message", "Result registered successfully in Ladok"));
         });
-
 
 
            // Find Ladok's internal module ID based on a module code
@@ -66,8 +70,9 @@ public class LadokRestAPI {
                 ctx.json(modulID);
             } else {
                 ctx.status(404);
-                ctx.result("Module not found in Ladok");
+                ctx.json(Map.of("message", "Module not found in Ladok"));
             }
+
 
         });
 

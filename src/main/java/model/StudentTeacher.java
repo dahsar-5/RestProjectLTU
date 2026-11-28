@@ -11,6 +11,7 @@ public class StudentTeacher {
     private String lName;
     private String email;
     private String status;
+    private boolean registered;
 
     // Grade selected for registration in Ladok
     private String ladokGrade;
@@ -113,5 +114,12 @@ public class StudentTeacher {
 
     public void setSelected(boolean value) {
         selected.set(value);
+    }
+    public boolean isRegistered() {
+        return registered;
+    }
+
+    public void setRegistered(boolean registered) {
+        this.registered = registered;
     }
 }
